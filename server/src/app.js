@@ -2,7 +2,6 @@ import express from "express";
 import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
-import mongoSanitize from "express-mongo-sanitize";
 
 import { apiLimiter } from "./middleware/rateLimiter.js";
 import { notFoundHandler, errorHandler } from "./middleware/errorHandler.js";
@@ -17,14 +16,17 @@ import { isAIConfigured } from "./services/gemini.service.js";
 const app = express();
 
 app.use(helmet());
+
 app.use(
   cors({
     origin: process.env.CLIENT_URL || "http://localhost:5173",
   })
 );
+
 app.use(express.json({ limit: "1mb" }));
-app.use(mongoSanitize());
+
 app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+
 app.use(apiLimiter);
 
 app.get("/api/health", (req, res) => {
